@@ -19,3 +19,27 @@ library(tidyverse)
 The folder contains the "entrance and exit for each subway station in NYC" is `Subway_data`.
 
 ## Problem 1
+
+### Read, clean, retain and convert the data
+
+```{r}
+subway_df = 
+  read_csv("./Subway_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% # read data
+  janitor::clean_names() %>% # cleaning the name
+  select(line:entry, vending, ada, ada_notes) %>% # filter
+  mutate(.data = .,
+    entry = ifelse(entry == "YES", TRUE, FALSE)) # convert
+
+subway_df$entry[1:100]
+```
+
+### About this dataset
+
+The variables this dataset contains are: `r colnames(subway_df)`.
+
+The cleaning step includes reading: `read_csv`, cleanning variable names: `janitor::clean_names`, filter: `select` and convert: `mutate`.
+
+The dimension are `r dim(subway_df)[1]` x `r dim(subway_df)[2]`.
+
+This data is not tidy because it contains variable name "route", all the route names shall be integrated into a single column.
+
