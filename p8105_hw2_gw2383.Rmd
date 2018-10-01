@@ -43,3 +43,20 @@ The dimension are `r dim(subway_df)[1]` x `r dim(subway_df)[2]`.
 
 This data is not tidy because it contains variable name "route", all the route names shall be integrated into a single column.
 
+### Some questions
+
+* The number of distinct stations are:
+```{r} 
+dim(distinct(subway_df, station_name, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11))[1]
+```
+
+* The number of stations that are ADA compliant is:
+```{r}
+distinct_df = distinct(subway_df, station_name, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11, ada)
+sum(distinct_df$ada == TRUE)
+```
+
+* The proportion of station entrances / exits without vending allow entrance is:
+```{r}
+sum(subway_df$vending == "NO") / length(subway_df$vending)
+```
