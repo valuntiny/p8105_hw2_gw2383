@@ -1,5 +1,5 @@
 ---
-p8105_hw2_gw2383title: "p8105_hw2_gw2383"
+title: "p8105_hw2_gw2383"
 author: "Guojing Wu"
 date: "2018/10/1"
 output: github_document
