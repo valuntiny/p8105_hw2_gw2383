@@ -2,7 +2,9 @@
 title: "p8105_hw2_gw2383"
 author: "Guojing Wu"
 date: "2018/10/1"
-output: github_document
+output:
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -12,3 +14,8 @@ library(tidyverse)
 
 ***
 
+## Problem 0
+
+The folder contains the "entrance and exit for each subway station in NYC" is `Subway_data`.
+
+## Problem 1
