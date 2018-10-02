@@ -16,7 +16,7 @@ library(tidyverse)
 
 ## Problem 0
 
-The folder contains the "entrance and exit for each subway station in NYC" is `Subway_data`.
+The folder contains the "entrance and exit for each subway station in NYC" is `local_data`.
 
 ## Problem 1
 
@@ -24,7 +24,7 @@ The folder contains the "entrance and exit for each subway station in NYC" is `S
 
 ```{r}
 subway_df = 
-  read_csv("./Subway_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% # read data
+  read_csv("./local_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% # read data
   janitor::clean_names() %>% # cleaning the name
   select(line:entry, vending, ada, ada_notes) %>% # filter
   mutate(.data = .,
@@ -59,4 +59,16 @@ sum(distinct_df$ada == TRUE)
 * The proportion of station entrances / exits without vending allow entrance is:
 ```{r}
 sum(subway_df$vending == "NO") / length(subway_df$vending)
+```
+
+## Problem 2
+
+Read and clean the Mr. Trash Wheel sheet.
+
+```{r}
+trash_df = 
+  readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 1, range = "A2:N258") %>%
+  janitor::clean_names() %>%
+  mutate(weight_tons = "weight/tons", 
+         volumn_cubic_yards = "volumn/cubic yards")
 ```
