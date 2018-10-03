@@ -10,6 +10,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(p8105.datasets)
 ```
 
 ***
@@ -47,29 +48,94 @@ This data is not tidy because it contains variable name "route", all the route n
 
 * The number of distinct stations are:
 ```{r} 
-dim(distinct(subway_df, station_name, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11))[1]
+dim(distinct(subway_df, line, station_name))[1]
 ```
 
 * The number of stations that are ADA compliant is:
 ```{r}
-distinct_df = distinct(subway_df, station_name, route1, route2, route3, route4, route5, route6, route7, route8, route9, route10, route11, ada)
-sum(distinct_df$ada == TRUE)
+sum(distinct(subway_df, line, station_name, ada)$ada == TRUE)
 ```
 
 * The proportion of station entrances / exits without vending allow entrance is:
 ```{r}
-sum(subway_df$vending == "NO") / length(subway_df$vending)
+entry_no_vending = subway_df$entry[which(subway_df$vending == "NO")] # station entrances / exits without vending
+sum(entry_no_vending == TRUE) / length(entry_no_vending)
 ```
+
+### Reformat the data
+
+```{r}
+subway_tidy_df = 
+  gather(subway_df, key = route_number, value = route_name, route1:route11) %>% # gather route by route_number
+  filter(!is.na(route_name)) # remove the one without route_number
+
+# distinct stations with ada compliance information
+subway_tidy_ada = distinct(subway_tidy_df, line, station_name, route_name, ada)
+```
+
+The number of distinct stations serve the A train is `r sum(distinct(subway_tidy_df, line, station_name, route_name)$route_name == "A")`. Of the stations that serve the A train, `r sum(subway_tidy_ada$ada[which(subway_tidy_ada$route_name == "A")] == TRUE)` stations are ADA compliant.
 
 ## Problem 2
 
-Read and clean the Mr. Trash Wheel sheet.
+### Read and clean the Mr. Trash Wheel sheet
 
 ```{r}
 trash_df = 
-  readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 1, range = "A2:N258") %>%
+  readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 1, range = "A2:N258") %>% # step 1
   janitor::clean_names() %>%
-  mutate(weight_tons = "weight/tons", 
-         volumn_cubic_yards = "volumn/cubic yards")
+  rename(weight_in_tons = weight_tons, volume_in_cubic_yards = volume_cubic_yards) %>% # step 2
+  filter(!is.na(dumpster)) %>% #step 3
+  mutate(sports_balls = as.integer(round(sports_balls))) # step 4
 ```
 
+### Read and clean the precipitation data
+
+```{r}
+# read precipitation data for 2016
+prcp_2016 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 4, range = "A2:B14") %>% 
+  mutate(Year = 2016) %>% 
+  rename(Total_inch = Total) %>% 
+  select(Year, Month, Total_inch) %>% 
+  filter(!is.na(Total_inch))
+# read precipitation data for 2017
+prcp_2017 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 3, range = "A2:B14") %>% 
+  mutate(Year = 2017) %>% 
+  rename(Total_inch = Total) %>% 
+  select(Year, Month, Total_inch) %>% 
+  filter(!is.na(Total_inch))
+
+# combine the dataset
+prcp_df = 
+  full_join(prcp_2016, prcp_2017, by = c("Year", "Month", "Total_inch")) %>% 
+  mutate(Month = month.name[Month])
+```
+
+### About these data
+
+* The final version of Mr. Trash Wheel data is not a tidy data, because the `r colnames(trash_df)[2:4]` is redundant.
+
+* The Mr. Trash Wheel data has `r dim(trash_df)[1]` observations and `r dim(trash_df)[2]` variables. The important variables include `dumpster`, `weight` , `volume` and `homes powered`: 
+
+```{r, echo = FALSE}
+head(trash_df, 10)[, c(1, 5, 6, 14)]
+```
+
+* The precipitation data has `r dim(prcp_df)[1]` observations. And all the variables in this is important:
+
+```{r, echo = FALSE}
+head(prcp_df, 10)
+```
+
+* The total precipitation in 2017 is `r sum(prcp_2017$Total_inch)`.
+
+* The median number of sports balls in a dumpster in 2016 is `r median(trash_df$sports_balls[which(trash_df$year == 2016)])`.
+
+## Problem 3
+
+```{r}
+brfss_df = 
+  p8105.datasets::brfss_smart2010 %>% 
+  janitor::clean_names() %>% # cleaning
+  filter(topic == "Overall Health") %>% # focus on the “Overall Health” topic 
+  select(-class, -topic, -question, -sample_size, -confidence_limit_low:-geo_location) # remove
+```
