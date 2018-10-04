@@ -80,24 +80,24 @@ Of the stations that serve the A train, `r dim(distinct(subway_tidy_df, line, st
 
 ```{r}
 trash_df = 
-  readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 1, range = "A2:N258") %>% # step 1
+  readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 1, range = "A2:N338") %>% # read
   janitor::clean_names() %>%
-  rename(weight_in_tons = weight_tons, volume_in_cubic_yards = volume_cubic_yards) %>% # step 2
-  filter(!is.na(dumpster)) %>% #step 3
-  mutate(sports_balls = as.integer(round(sports_balls))) # step 4
+  rename(weight_in_tons = weight_tons, volume_in_cubic_yards = volume_cubic_yards) %>% # clean names
+  filter(!is.na(dumpster)) %>% # omit rows
+  mutate(sports_balls = as.integer(round(sports_balls))) # convert
 ```
 
 ### Read and clean the precipitation data
 
 ```{r}
 # read precipitation data for 2016
-prcp_2016 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 4, range = "A2:B14") %>% 
+prcp_2016 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 5, range = "A2:B14") %>% 
   mutate(Year = 2016) %>% 
   rename(Total_inch = Total) %>% 
   select(Year, Month, Total_inch) %>% 
   filter(!is.na(Total_inch))
 # read precipitation data for 2017
-prcp_2017 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 3, range = "A2:B14") %>% 
+prcp_2017 = readxl::read_excel("./local_data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, range = "A2:B14") %>% 
   mutate(Year = 2017) %>% 
   rename(Total_inch = Total) %>% 
   select(Year, Month, Total_inch) %>% 
