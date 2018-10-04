@@ -148,4 +148,41 @@ brfss_df =
 
 ### Answer questions
 
-* 
+* The number of unique locations included in the dataset is `r dim(distinct(brfss_df, location_desc))[1]`. Calculating the number of distinct states in this dataset: `r dim(distinct(brfss_df, location_abbr))[1]`, we can see that every state is represented. The state that beed observed the most is `r names((brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[1])` with `r (brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[[1]]` observations.
+
+* The median of the “Excellent” response value is `r median((brfss_df %>% filter(year == 2002) %>% select(excellent))$excellent, na.rm = T)`. (The NAs are removed)
+
+* Histogram of “Excellent” response values in the year 2002.
+
+```{r}
+ggplot(
+  brfss_df %>% filter(year == 2002), 
+  aes(x = excellent)
+  ) +
+  geom_histogram() +
+  labs(
+    x = "excellent value",
+    title = "histogram of excellent value"
+  ) +
+  theme_bw()
+```
+
+* Scatterplot
+
+```{r}
+ggplot(
+  brfss_df %>% filter(year >= 2002 & year <= 2010) %>% filter(location_desc %in% c("NY - New York County", "NY - Queens County")),
+  aes(x = year, y = excellent, color = location_desc)
+) +
+  geom_point() +
+  labs(
+    y = "excellent value", 
+    title = "proportion of Excellent values in New York County and Queens County"
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
