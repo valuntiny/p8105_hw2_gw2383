@@ -70,14 +70,9 @@ subway_tidy_df =
   filter(!is.na(route_name)) # remove the one without route_number
 ```
 
-The number of distinct stations serve the A train is `r sum(distinct(subway_tidy_df, line, station_name, route_name)$route_name == "A")`. 
+The number of distinct stations serve the A train is `r dim(distinct(subway_tidy_df, line, station_name, route_name) %>% filter(route_name == "A"))[1]`. 
 
-```{r}
-# distinct stations with ada compliance information
-subway_tidy_ada = distinct(subway_tidy_df, line, station_name, route_name, ada)
-```
-
-Of the stations that serve the A train, `r sum(subway_tidy_ada$ada[which(subway_tidy_ada$route_name == "A")] == TRUE)` stations are ADA compliant.
+Of the stations that serve the A train, `r dim(distinct(subway_tidy_df, line, station_name, route_name, ada) %>% filter(route_name == "A") %>% filter(ada == TRUE))[1]` stations are ADA compliant.
 
 ## Problem 2
 
@@ -136,10 +131,21 @@ head(prcp_df, 10)
 
 ## Problem 3
 
+### create the dataset
+
 ```{r}
 brfss_df = 
   p8105.datasets::brfss_smart2010 %>% 
   janitor::clean_names() %>% # cleaning
   filter(topic == "Overall Health") %>% # focus on the “Overall Health” topic 
-  select(-class, -topic, -question, -sample_size, -confidence_limit_low:-geo_location) # remove
+  select(-class, -topic, -question, -sample_size, -confidence_limit_low:-geo_location) %>% # remove
+  rename(location_abbr = locationabbr, location_desc = locationdesc) %>% # format the variable name
+  spread(key = response, value = data_value) %>% # spread the data by response
+  janitor::clean_names() %>%
+  select(year, location_abbr, location_desc, poor, fair, good, very_good, excellent) %>% # clean the name again
+  mutate(above_average = very_good + excellent) # create a new column
 ```
+
+### Answer questions
+
+* 
