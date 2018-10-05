@@ -148,7 +148,7 @@ brfss_df =
 
 ### Answer questions
 
-* The number of unique locations included in the dataset is `r dim(distinct(brfss_df, location_desc))[1]`. Calculating the number of distinct states in this dataset: `r dim(distinct(brfss_df, location_abbr))[1]`, we can see that every state is represented. The state that beed observed the most is `r names((brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[1])` with `r (brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[[1]]` observations.
+* The number of unique locations included in the dataset is `r dim(distinct(brfss_df, location_desc))[1]`. Calculating the number of distinct states in this dataset: `r dim(distinct(brfss_df, location_abbr))[1]`, we can see that every state is represented. The state that been observed the most is `r names((brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[1])` with `r (brfss_df$location_abbr %>% table() %>% sort(decreasing = T))[[1]]` observations.
 
 * The median of the “Excellent” response value is `r median((brfss_df %>% filter(year == 2002) %>% select(excellent))$excellent, na.rm = T)`. (The NAs are removed)
 
